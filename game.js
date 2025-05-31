@@ -6,6 +6,7 @@ class GameScene extends Phaser.Scene {
     this.coinsCollected = 0;
     this.fireballsCollected = 0; // 👈 agregamos contador de fireballs
     this.startedOnce = false;
+    this.totalScore = 0;
   }
 
   preload() {
@@ -26,7 +27,7 @@ class GameScene extends Phaser.Scene {
       this.fireballsCollected = 0;
       this.startedOnce = true;
     }
-
+    
     this.physics.world.createDebugGraphic();
     this.physics.world.drawDebug = true;
 
@@ -50,75 +51,98 @@ class GameScene extends Phaser.Scene {
   }
 
   loadLevel(level) {
-    if (this.map) this.map.destroy();
-
-    this.map = this.make.tilemap({ key: `level${level}` });
-    const tileset = this.map.addTilesetImage('tiles');
-    this.groundLayer = this.map.createLayer('tileLayer', tileset);
-    this.groundLayer.setCollisionByProperty({ collide: true });
-
-    this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-
-    if (this.player) this.player.destroy();
+    if (this.coins) this.coins.clear(true, true);
+    if (this.fireballs) this.fireballs.clear(true, true);
     if (this.enemies) this.enemies.clear(true, true);
 
-    const objects = this.map.getObjectLayer('objects')['objects'];
-    this.coins = this.physics.add.staticGroup();
-    this.fireballs = this.physics.add.staticGroup();
-    this.enemies = this.physics.add.group();
+  if (this.map) this.map.destroy();
 
-    objects.forEach(obj => {
-  const { x, y, type, properties } = obj;
-  if (type === 'spawn') {
-    this.player = this.physics.add.sprite(x, y, 'player');
-    this.player.setDepth(1).setOrigin(0.5, 0.5);
-    this.player.setCollideWorldBounds(true);
-  } else if (type === 'coins') {
-    const coin = this.coins.create(x, y, 'coin').setOrigin(0.5, 0.5).setDepth(1);
-  } else if (type === 'fireball') {
-    const fireball = this.fireballs.create(x, y, 'fireball').setOrigin(0.5, 0.5).setDepth(1);
-  } else if (type === 'enemy') {
-    const enemy = this.enemies.create(x, y, 'enemy').setOrigin(0.5, 0.5).setDepth(1);
-    if (properties && properties.length > 0) {
-      const prop = properties.find(p => p.name === 'move');
-      if (prop) {
-        enemy.moveDir = prop.value;
+  this.map = this.make.tilemap({ key: `level${level}` });
+  const tileset = this.map.addTilesetImage('tiles');
+  this.groundLayer = this.map.createLayer('tileLayer', tileset);
+  this.groundLayer.setCollisionByProperty({ collide: true });
+
+  this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+
+  if (this.player) this.player.destroy();
+  if (this.enemies) this.enemies.clear(true, true);
+
+  const objects = this.map.getObjectLayer('objects')['objects'];
+  this.coins = this.physics.add.staticGroup();
+  this.fireballs = this.physics.add.staticGroup();
+  this.enemies = this.physics.add.group();
+    
+  this.scoreText = this.add.text(
+  this.sys.game.config.width / 2,
+  10,
+  'Score: 0',
+  { fontSize: '16px', fill: '#fff' }
+).setOrigin(0.5, 0).setScrollFactor(0).setDepth(2);
+  
+objects.forEach(obj => {
+    const { x, y, type, properties } = obj;
+    if (type === 'spawn') {
+      this.player = this.physics.add.sprite(x, y, 'player');
+      this.player.setDepth(1).setOrigin(0.5, 0.5);
+      this.player.setCollideWorldBounds(true);
+    } else if (type === 'coins') {
+      const coin = this.coins.create(x, y, 'coin').setOrigin(0.5, 0.5).setDepth(1);
+    } else if (type === 'fireball') {
+      const fireball = this.fireballs.create(x, y, 'fireball').setOrigin(0.5, 0.5).setDepth(1);
+    } else if (type === 'enemy') {
+      const enemy = this.enemies.create(x, y, 'enemy').setOrigin(0.5, 0.5).setDepth(1);
+      if (properties && properties.length > 0) {
+        const prop = properties.find(p => p.name === 'move');
+        if (prop) {
+          enemy.moveDir = prop.value;
+        }
       }
+      enemy.startX = x;
+      enemy.startY = y;
+      enemy.speed = 30;
+      enemy.setCollideWorldBounds(true);
     }
-    enemy.startX = x;
-    enemy.startY = y;
-    enemy.speed = 30;
-    enemy.setCollideWorldBounds(true);
+  });
+
+  // 👇 Solo ahora buscamos y creamos la salida (ya existe this.player)
+  const exitObj = this.map.findObject('objects', obj => obj.type === 'exit');
+  if (exitObj) {
+    this.exitZone = this.physics.add.staticSprite(exitObj.x, exitObj.y, null)
+      .setSize(16, 16)
+      .setVisible(false);
+    this.physics.add.overlap(this.player, this.exitZone, this.tryReachExit, null, this);
   }
-});
 
+  this.physics.add.collider(this.player, this.groundLayer);
+  this.physics.add.collider(this.enemies, this.groundLayer);
+  this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
+  this.physics.add.overlap(this.player, this.fireballs, this.collectFireball, null, this);
+  this.physics.add.collider(this.player, this.enemies, this.hitEnemy, null, this);
 
-    this.physics.add.collider(this.player, this.groundLayer);
-    this.physics.add.collider(this.enemies, this.groundLayer);
-    this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
-    this.physics.add.overlap(this.player, this.fireballs, this.collectFireball, null, this);
-    this.physics.add.collider(this.player, this.enemies, this.hitEnemy, null, this);
-
-    this.enemies.children.iterate(enemy => {
-      if (enemy.moveDir === 'horizontal') {
-        enemy.setVelocityX(enemy.speed);
-      } else if (enemy.moveDir === 'vertical') {
-        enemy.setVelocityY(enemy.speed);
-      }
-    });
-
-    if (level === 3) {
-      this.cameras.main.startFollow(this.player);
-    } else {
-      this.cameras.main.stopFollow();
+  this.enemies.children.iterate(enemy => {
+    if (enemy.moveDir === 'horizontal') {
+      enemy.setVelocityX(enemy.speed);
+    } else if (enemy.moveDir === 'vertical') {
+      enemy.setVelocityY(enemy.speed);
     }
+  });
+
+  if (level === 3) {
+    this.cameras.main.startFollow(this.player);
+  } else {
+    this.cameras.main.stopFollow();
   }
+}
+
 
   collectCoin(player, coin) {
-    coin.destroy();
-    this.coinsCollected++;
-    this.coinText.setText('Coins: ' + this.coinsCollected); // 👈 actualiza el texto
-  }
+  coin.destroy();
+  this.coinsCollected++;
+  this.totalScore += 100;
+  this.coinText.setText('Coins: ' + this.coinsCollected);
+  this.scoreText.setText('Score: ' + this.totalScore);
+}
+
 
   collectFireball(player, fireball) {
     fireball.destroy();
@@ -126,18 +150,28 @@ class GameScene extends Phaser.Scene {
     this.fireballText.setText(this.fireballsCollected); // 👈 actualiza el contador
   }
 
-  hitEnemy(player, enemy) {
-  // Reiniciamos los contadores
+ hitEnemy(player, enemy) {
   this.coinsCollected = 0;
   this.fireballsCollected = 0;
 
-  // Actualizamos los textos en pantalla
   this.coinText.setText('Coins: 0');
   this.fireballText.setText('0');
 
-  // Recargamos el nivel
+  this.currentLevel = 1; // 👈 Siempre vuelve al nivel 1
   this.loadLevel(this.currentLevel);
 }
+
+tryReachExit() {
+  if (this.fireballsCollected >= 5) {
+    if (this.currentLevel < 3) {
+      this.currentLevel++;
+      this.loadLevel(this.currentLevel);
+    } else {
+      this.scene.restart();
+    }
+  }
+}
+
 
 
   reachExit() {

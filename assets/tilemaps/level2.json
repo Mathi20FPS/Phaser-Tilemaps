@@ -236,6 +236,17 @@
                  "width":16,
                  "x":4,
                  "y":350.666666666667
+                }, 
+                {
+                 "height":0,
+                 "id":78,
+                 "name":"exit",
+                 "rotation":0,
+                 "type":"exit",
+                 "visible":true,
+                 "width":0,
+                 "x":790.666666666667,
+                 "y":339.333333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -244,7 +255,7 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":78,
+ "nextobjectid":79,
  "orientation":"orthogonal",
  "properties":[
         {
