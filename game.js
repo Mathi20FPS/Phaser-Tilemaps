@@ -127,8 +127,18 @@ class GameScene extends Phaser.Scene {
   }
 
   hitEnemy(player, enemy) {
-    this.loadLevel(this.currentLevel);
-  }
+  // Reiniciamos los contadores
+  this.coinsCollected = 0;
+  this.fireballsCollected = 0;
+
+  // Actualizamos los textos en pantalla
+  this.coinText.setText('Coins: 0');
+  this.fireballText.setText('0');
+
+  // Recargamos el nivel
+  this.loadLevel(this.currentLevel);
+}
+
 
   reachExit() {
     if (this.coinsCollected >= 5) {
