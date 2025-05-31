@@ -151,15 +151,22 @@ objects.forEach(obj => {
   }
 
  hitEnemy(player, enemy) {
+  // Reseteamos puntajes
   this.coinsCollected = 0;
   this.fireballsCollected = 0;
-
   this.coinText.setText('Coins: 0');
   this.fireballText.setText('0');
 
-  this.currentLevel = 1; // 👈 Siempre vuelve al nivel 1
+  // Siempre volvemos al nivel 1
+  this.currentLevel = 1;
+
+  // 👇 Forzamos que la cámara vuelva al jugador
+  this.cameras.main.stopFollow();
+  this.cameras.main.setScroll(0, 0);
+
   this.loadLevel(this.currentLevel);
 }
+
 
 tryReachExit() {
   if (this.fireballsCollected >= 5) {
