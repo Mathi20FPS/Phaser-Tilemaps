@@ -127,11 +127,15 @@ objects.forEach(obj => {
     }
   });
 
-  if (level === 3) {
-    this.cameras.main.startFollow(this.player);
-  } else {
-    this.cameras.main.stopFollow();
-  }
+  // 👇 Control de la cámara y zoom para nivel 2 y 3
+if (level === 2 || level === 3) {
+  this.cameras.main.startFollow(this.player);
+  this.cameras.main.setZoom(1.5); // 👈 ajustá el zoom a tu gusto (1.2, 1.5, etc)
+} else {
+  this.cameras.main.stopFollow();
+  this.cameras.main.setZoom(1); // 👈 vuelve a zoom normal en el nivel 1
+}
+
 }
 
 
