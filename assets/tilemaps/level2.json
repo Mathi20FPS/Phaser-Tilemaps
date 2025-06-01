@@ -22,102 +22,6 @@
          "name":"objects",
          "objects":[
                 {
-                 "gid":94,
-                 "height":9,
-                 "id":58,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":451.333333333333,
-                 "y":481.666666666667
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":59,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":255.333333333333,
-                 "y":482.333333333333
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":60,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":377.333333333333,
-                 "y":421
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":61,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":268,
-                 "y":387
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":62,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":436,
-                 "y":327.666666666667
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":63,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":250,
-                 "y":289.666666666667
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":64,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":262.666666666667,
-                 "y":191
-                }, 
-                {
-                 "gid":94,
-                 "height":9,
-                 "id":65,
-                 "name":"coins",
-                 "rotation":0,
-                 "type":"coins",
-                 "visible":true,
-                 "width":9,
-                 "x":454.666666666667,
-                 "y":199.666666666667
-                }, 
-                {
                  "gid":92,
                  "height":16,
                  "id":66,
@@ -152,6 +56,18 @@
                  "width":16,
                  "x":256,
                  "y":218
+                }, 
+                {
+                 "gid":92,
+                 "height":16,
+                 "id":79,
+                 "name":"enemy",
+                 "rotation":0,
+                 "type":"enemy",
+                 "visible":true,
+                 "width":16,
+                 "x":290.666666666667,
+                 "y":478
                 }, 
                 {
                  "gid":92,
@@ -255,7 +171,7 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":79,
+ "nextobjectid":80,
  "orientation":"orthogonal",
  "properties":[
         {
@@ -1071,19 +987,6 @@
          "imagewidth":9,
          "margin":0,
          "name":"fireball",
-         "spacing":0,
-         "tilecount":1,
-         "tileheight":9,
-         "tilewidth":9
-        }, 
-        {
-         "columns":1,
-         "firstgid":94,
-         "image":"..\/sprites\/coins.png",
-         "imageheight":9,
-         "imagewidth":9,
-         "margin":0,
-         "name":"coins",
          "spacing":0,
          "tilecount":1,
          "tileheight":9,
